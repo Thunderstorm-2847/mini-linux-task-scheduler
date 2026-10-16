@@ -1,0 +1,1 @@
+g++ -std=c++17 -Wall -Wextra -Iinclude src/main.cpp src/task.cpp -o scheduler
