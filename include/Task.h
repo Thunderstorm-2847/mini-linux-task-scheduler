@@ -22,6 +22,8 @@ struct Task
     int id;
     std::string name;
     std::string message;
+    std::string command;
+    std::vector<std::string> arguments;
     Tasktype type;
     TaskStatus status;
 };

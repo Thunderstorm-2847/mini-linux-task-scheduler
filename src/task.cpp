@@ -1,6 +1,12 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <cstdio>
+#include <sstream>
+
 #include "Task.h"
 
 void addTask(std::vector<Task>& tasks, int& nextID)
@@ -70,6 +76,32 @@ void addTask(std::vector<Task>& tasks, int& nextID)
     {
         newTask.type = Tasktype::LINUX_COMMAND;
         newTask.message = "";
+
+        std::string input;
+
+        std::cout << "Enter Linux Command: ";
+
+        std::cin.ignore();
+        std::getline(std::cin, input);
+
+        std::istringstream iss(input);
+
+        iss >> newTask.command;
+
+        // The remaining tokens are arguments.
+        std::string arg;
+        while (iss >> arg)
+        {
+            newTask.arguments.push_back(arg);
+        }
+
+        if (newTask.command.empty())
+        {
+            std::cout << "Invalid command. Task not added.\n";
+            return;
+        }
+
+        std::cout << '\n';
     }
 
     newTask.status = TaskStatus::WAITING;
@@ -126,13 +158,64 @@ void viewTasks(const std::vector<Task>& tasks)
 
 bool executeTask(const Task& task)
 {
-    if(task.type != Tasktype::INTERNAL)
+    if(task.type == Tasktype::INTERNAL)
+    {
+        std::cout << "Task Output: " << task.message << '\n';
+
+        return true;
+    }
+    else if(task.type == Tasktype::LINUX_COMMAND)
+    {
+        if (task.command.empty())
+        {
+            std::cerr << "Error: command cannot be empty.\n";
+            return false;
+        }
+
+        std::vector<char *> argv;
+        argv.push_back(const_cast<char *>(task.command.c_str()));
+
+        for (const std::string &arg : task.arguments)
+        {
+            argv.push_back(const_cast<char *>(arg.c_str()));
+        }
+
+        argv.push_back(nullptr);
+
+        pid_t pid = fork();
+
+        if (pid < 0)
+        {
+            perror("fork failed");
+            return false;
+        }
+
+        if (pid == 0)
+        {
+            execvp(task.command.c_str(), argv.data());
+
+            perror("Command execution failed");
+            _exit(127);
+        }
+
+        int status;
+
+        if (waitpid(pid, &status, 0) == -1)
+        {
+            perror("waitpid failed");
+            return false;
+        }
+
+        if (WIFEXITED(status) && WEXITSTATUS(status) == 0)
+        {
+            return true;
+        }
+
+        return false;
+    }
+    else
     {
         std::cout << "Unsupported Task Type." << '\n';
         return false;
     }
-
-    std::cout << "Task Output: " << task.message << '\n';
-
-    return true;
 }
