@@ -44,15 +44,32 @@ void addTask(std::vector<Task>& tasks, int& nextID)
         std::cout << '\n';
     } while (t<1 || t>2);
     
-    
-    
     if(t==1)
     {
         newTask.type = Tasktype::INTERNAL;
+
+        std::string str;
+
+        do
+        {
+            std::cout << "Enter message to print: ";
+
+            std::cin.ignore();
+            std::getline(std::cin, str);
+
+            if (str == "")
+                std::cout << "Invalid message. Enter message again." << '\n';
+
+            std::cout << '\n';
+        } while (str == "");
+
+        newTask.message = str;
     }
+
     if(t==2)
     {
         newTask.type = Tasktype::LINUX_COMMAND;
+        newTask.message = "";
     }
 
     newTask.status = TaskStatus::WAITING;
@@ -105,4 +122,17 @@ void viewTasks(const std::vector<Task>& tasks)
     }
     std::cout << "=========================" << '\n';
     std::cout << '\n';
+}
+
+bool executeTask(const Task& task)
+{
+    if(task.type != Tasktype::INTERNAL)
+    {
+        std::cout << "Unsupported Task Type." << '\n';
+        return false;
+    }
+
+    std::cout << "Task Output: " << task.message << '\n';
+
+    return true;
 }

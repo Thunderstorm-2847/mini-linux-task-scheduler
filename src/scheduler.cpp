@@ -1,6 +1,7 @@
 #include<iostream>
 #include<bits/stdc++.h>
 #include<vector>
+
 #include "Scheduler.h"
 
 void runScheduler(std::vector<Task>& tasks)
@@ -24,13 +25,18 @@ void runScheduler(std::vector<Task>& tasks)
             else
             {
                 std::cout << "Task " << task.id << ": " << task.name << '\n';
-                std::cout << taskStatusToString(task.status) << " -> ";
 
                 task.status = TaskStatus::RUNNING;
-                std::cout << taskStatusToString(task.status) << " -> ";
+                std::cout << "Status: " << taskStatusToString(task.status) << '\n';
 
-                task.status = TaskStatus::COMPLETED;
-                std::cout << taskStatusToString(task.status) << '\n';
+                bool exitStatus = executeTask(task);
+
+                if(exitStatus==true)
+                    task.status = TaskStatus::COMPLETED;
+                else
+                    task.status = TaskStatus::FAILED;
+
+                std::cout << "Status: " << taskStatusToString(task.status) << '\n';
 
                 std::cout << '\n';
             }
