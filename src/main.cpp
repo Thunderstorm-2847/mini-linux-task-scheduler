@@ -3,6 +3,7 @@
 #include<string>
 #include<vector>
 #include "Task.h"
+#include "Scheduler.h"
 
 int main() {
     std::vector<Task> tasks;
@@ -16,7 +17,8 @@ int main() {
         std::cout << "Options:" << '\n';
         std::cout << "1. Add a task" << '\n';
         std::cout << "2. View all tasks" << '\n';
-        std::cout << "3. Exit" << '\n';
+        std::cout << "3. Run Scheduler" << '\n';
+        std::cout << "4. Exit" << '\n';
         std::cout << '\n';
 
         std::cout << "Enter your choice: ";
@@ -34,6 +36,10 @@ int main() {
         }
         else if (choice == 3)
         {
+            runScheduler(tasks);
+        }
+        else if (choice == 4)
+        {
             std::cout << "Exiting the scheduler..." << '\n';
         }
         else
@@ -43,7 +49,7 @@ int main() {
 
         std::cout << '\n';
 
-    } while (choice!=3);
+    } while (choice!=4);
 
     return 0;
 }
