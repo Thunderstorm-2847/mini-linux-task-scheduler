@@ -86,9 +86,10 @@ void viewTasks(const std::vector<Task>& tasks)
     std::cout << '\n';
     
     if(tasks.size()==0)
+    {
         std::cout << "No tasks available." << '\n';
-    
-
+        std::cout << '\n';
+    }
     else
     {
         int n = tasks.size();
